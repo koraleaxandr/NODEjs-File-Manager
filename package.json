@@ -1,0 +1,25 @@
+{
+  "name": "nodejs-file-manager",
+  "version": "1.0.0",
+  "description": "simple file manager on Node",
+  "main": "./src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": " node src/index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koraleaxandr/NODEjs-File-Manager.git"
+  },
+  "keywords": [
+    "file",
+    "manager"
+  ],
+  "author": "koraleaxandr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koraleaxandr/NODEjs-File-Manager/issues"
+  },
+  "homepage": "https://github.com/koraleaxandr/NODEjs-File-Manager#readme"
+}
