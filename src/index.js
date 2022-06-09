@@ -1,8 +1,6 @@
 import process from 'process';
 
-import {
-    messages
-} from './messages.js';
+import { messages } from './messages.js';
 import { pathToWorkingDirectory } from './createDirPath.js';
 import { commandsListener } from './commandsListener.js';
 

@@ -2,6 +2,9 @@ import path from 'path';
 import process from 'process';
 import * as fs from 'fs/promises';
 
+import { messages } from './messages.js';
+import { Dir } from 'fs';
+
 const homeDirectory = process.env.HOME;
 export const currentPath = '';
 export let pathToWorkingDirectory =
@@ -10,7 +13,7 @@ export let pathToWorkingDirectory =
 export const getCurrentPath = async(commandArray) => {
     let newPath = '';
     const pathArray = pathToWorkingDirectory.split('\\');
-    console.log(pathArray.toString().replaceAll(',', '\\'));
+    console.log(pathArray.toString());
     switch (commandArray[0]) {
         case 'up\r\n':
             const newPathArray = pathArray.length > 1 ? pathArray.slice(0, -1) : pathArray;
@@ -23,16 +26,21 @@ export const getCurrentPath = async(commandArray) => {
             
             break;
             case 'cd\r\n':
-                newPath = pathToWorkingDirectory;
+                newPath = path.dirname(pathToWorkingDirectory);
             break;
         default:
             break;
     }
     try {
-        await fs.open(newPath)
-        pathToWorkingDirectory = newPath;
-        console.log(pathToWorkingDirectory);
-    } catch (error) {
-        throw 'messages.operationFailedMessage';
-    }    
+        console.log(newPath);
+        const res = await fs.opendir(path.dirname(newPath));
+        console.log(res);
+        if (typeof res !== Error) {
+            pathToWorkingDirectory = newPath;       
+        }        
+    } catch (error) { 
+        //console.log(error);   
+        console.log(messages.operationFailedMessage);
+    } 
+    console.log(pathToWorkingDirectory);
 }

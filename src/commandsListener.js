@@ -9,7 +9,7 @@ export const commandsListener = async () => {
     const input = stdin;
     const output = stdout;
     const decode = new Transform({
-        transform(chunk, encoding, callback) {            
+        transform(chunk, encoding = 'utf-8', callback) {            
             chunk = chunk.toString();
             console.log(chunk);
               getUserCommand(chunk);
