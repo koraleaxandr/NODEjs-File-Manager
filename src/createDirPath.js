@@ -13,31 +13,28 @@ export let pathToWorkingDirectory =
 export const getCurrentPath = async(commandArray) => {
     let newPath = '';
     const pathArray = pathToWorkingDirectory.split('\\');
-    console.log(pathArray.toString());
+    const commandPathArray = commandArray.slice(1);
+    const commandPath = commandPathArray.join(' ');
     switch (commandArray[0]) {
         case 'up\r\n':
             const newPathArray = pathArray.length > 1 ? pathArray.slice(0, -1) : pathArray;
             newPath = path.join(...newPathArray);
-            console.log('up' + newPath);
             break;
             case 'cd':
-                if (!path.isAbsolute(commandArray[1])) {
-                    newPath = path.join( ...pathArray, commandArray[1]);
-                } else newPath = path.join(commandArray[1]);
+                if (!path.isAbsolute(commandPath)) {
+                    newPath = path.join( ...pathArray, commandPath.slice(0, -2));
+                } else newPath = path.join(commandPath.slice(0, -2));
             
             break;
             case 'cd\r\n':
                 newPath = (pathToWorkingDirectory);
-                console.log('cd ' + newPath);
             break;
         default:
             break;
     }
     try {
-        newPath = path.normalize(newPath) + '';
-        console.log('try ' + newPath +'xx');
+        newPath = path.normalize(newPath).replace('.', '/');
         const res = await fs.readdir(newPath);
-        console.log(res);
         if (typeof res !== Error) {
             pathToWorkingDirectory = newPath; 
             return  pathToWorkingDirectory;     
