@@ -18,29 +18,34 @@ export const getCurrentPath = async(commandArray) => {
         case 'up\r\n':
             const newPathArray = pathArray.length > 1 ? pathArray.slice(0, -1) : pathArray;
             newPath = path.join(...newPathArray);
+            console.log('up' + newPath);
             break;
             case 'cd':
-                if (commandArray[1].startsWith('./')) {
-                    newPath = path.join(...pathArray, commandArray[1]);
-                } else newPath = commandArray[1];
+                if (!path.isAbsolute(commandArray[1])) {
+                    newPath = path.join( ...pathArray, commandArray[1]);
+                } else newPath = path.join(commandArray[1]);
             
             break;
             case 'cd\r\n':
-                newPath = path.dirname(pathToWorkingDirectory);
+                newPath = (pathToWorkingDirectory);
+                console.log('cd ' + newPath);
             break;
         default:
             break;
     }
     try {
-        console.log(newPath);
-        const res = await fs.opendir(path.dirname(newPath));
+        newPath = path.normalize(newPath) + '';
+        console.log('try ' + newPath +'xx');
+        const res = await fs.readdir(newPath);
         console.log(res);
         if (typeof res !== Error) {
-            pathToWorkingDirectory = newPath;       
+            pathToWorkingDirectory = newPath; 
+            return  pathToWorkingDirectory;     
         }        
     } catch (error) { 
-        //console.log(error);   
+        console.log(error);   
         console.log(messages.operationFailedMessage);
+        return error;
     } 
     console.log(pathToWorkingDirectory);
 }

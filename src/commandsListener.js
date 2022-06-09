@@ -9,10 +9,10 @@ export const commandsListener = async () => {
     const input = stdin;
     const output = stdout;
     const decode = new Transform({
-        transform(chunk, encoding = 'utf-8', callback) {            
+        transform(chunk, encoding, callback) {            
             chunk = chunk.toString();
             console.log(chunk);
-              getUserCommand(chunk);
+            const res =  getUserCommand(chunk);
           callback(null, (messages.currentPathMessage(pathToWorkingDirectory) + '\n'));
         },
       });
@@ -35,8 +35,7 @@ const getUserCommand = async (commandString) => {
         case 'up\r\n':
         case 'cd\r\n':
         case 'cd':
-            getCurrentPath(commandArray);
-            break;
+           return await getCurrentPath(commandArray);            
         default:
             break;
     }

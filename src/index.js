@@ -8,7 +8,7 @@ export let userName = 'User';
 
 export const startApp = async () => {
     const args = process.argv.slice(2); 
-    userName = args[0].split('=')[1];   
+    userName = args[0]?.split('=')[1] ? args[0].split('=')[1]: 'Anonymous';   
     console.log(messages.userGreetingMessage(userName));
     commandsListener();    
 };
