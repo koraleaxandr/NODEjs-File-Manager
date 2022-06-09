@@ -1,12 +1,18 @@
 import process from 'process';
 
-export const startApp = async () => { 
-    const args = process.argv.slice(2);
-    args.forEach((element, index) => {
-        if (index % 2 === 0) {
-            console.log(`${element} = ${args[index +1]}`);
-        } 
-    });
+import {
+    messages
+} from './messages.js';
+import { pathToWorkingDirectory } from './createDirPath.js';
+import { commandsListener } from './commandsListener.js';
+
+export let userName = 'User';
+
+export const startApp = async () => {
+    const args = process.argv.slice(2); 
+    userName = args[0].split('=')[1];   
+    console.log(messages.userGreetingMessage(userName));
+    commandsListener();    
 };
 
 startApp();
