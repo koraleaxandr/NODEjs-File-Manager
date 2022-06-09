@@ -7,7 +7,7 @@ export const currentPath = '';
 export let pathToWorkingDirectory =
     homeDirectory;
 
-export const getCurrentPath = (commandArray) => {
+export const getCurrentPath = async(commandArray) => {
     let newPath = '';
     const pathArray = pathToWorkingDirectory.split('\\');
     console.log(pathArray.toString().replaceAll(',', '\\'));
@@ -28,6 +28,11 @@ export const getCurrentPath = (commandArray) => {
         default:
             break;
     }
-    pathToWorkingDirectory = newPath;
-    console.log(pathToWorkingDirectory);
+    try {
+        await fs.open(newPath)
+        pathToWorkingDirectory = newPath;
+        console.log(pathToWorkingDirectory);
+    } catch (error) {
+        throw 'messages.operationFailedMessage';
+    }    
 }
