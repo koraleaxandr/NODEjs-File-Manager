@@ -3,6 +3,7 @@ import process, { stdin, stdout } from 'process';
 
 import { pathToWorkingDirectory, getCurrentPath } from './createDirPath.js';
 import { messages } from './messages.js';
+import { createFile } from './fs/create.js';
 
 export const commandsListener = async () => {
     console.log(messages.currentPathMessage(pathToWorkingDirectory));
@@ -38,9 +39,12 @@ const getUserCommand = async (commandString) => {
         case 'ls\r\n':
            return await getCurrentPath(commandArray);
            case 'cat':
-           return await getCurrentPath(commandArray);            
+           return await getCurrentPath(commandArray);
+           case 'add':
+           return await createFile(pathToWorkingDirectory, commandArray[1].slice(0, -2))
         default:
-            console.log(messages.invalidInputMessage);
+            console.error(messages.invalidInputMessage);
+            console.log(messages.currentPathMessage(pathToWorkingDirectory));
             break;
     }
 }
