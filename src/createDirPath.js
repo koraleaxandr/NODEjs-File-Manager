@@ -6,7 +6,6 @@ import { messages } from './messages.js';
 import { readFile } from './fs/read.js'
 
 const homeDirectory = process.env.HOME;
-export const currentPath = '';
 export let pathToWorkingDirectory =
     homeDirectory;
 
@@ -15,7 +14,6 @@ export const getCurrentPath = async(commandArray) => {
     const pathArray = pathToWorkingDirectory.split('\\');
     const commandPathArray = commandArray.slice(1);
     const commandPath = commandPathArray.join(' ');
-    console.log(commandPath);
     switch (commandArray[0]) {
         case 'up\r\n':
             const newPathArray = pathArray.length > 1 ? pathArray.slice(0, -1) : process.env.HOMEDRIVE;
@@ -33,11 +31,9 @@ export const getCurrentPath = async(commandArray) => {
             case 'cat':
                 newPath = (pathToWorkingDirectory);
                 if (!path.isAbsolute(commandPath)) {
-                    console.log('35');
                     const pathToFile = path.join( ...pathArray, commandPath.slice(0, -2));
                     await readFile(pathToFile);
                 } else {
-                    console.log('39ls');
                     const pathToFile = path.join(commandPath.slice(0, -2));
                     await readFile(pathToFile);
                 }                

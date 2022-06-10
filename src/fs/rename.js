@@ -3,10 +3,10 @@ import path from 'path';
 
 import { messages } from '../messages.js';
 
-export const rename = async (pathString, newFilename) => {
+export const renameFile = async (pathString, newFilename) => {
     try {
-        await fs.realpath(pathString)
-        console.log(messages.operationFailedMessage);
+        await fs.realpath(`${path.dirname(pathString)}/${newFilename}`);
+        console.log(messages.operationFailedMessage);        
         return;
     } catch (error) {}
     try {
