@@ -11,9 +11,9 @@ export const commandsListener = async () => {
     const decode = new Transform({
         transform(chunk, encoding, callback) {            
             chunk = chunk.toString();
-            console.log(chunk);
+            // console.log(chunk);
             const res =  getUserCommand(chunk);
-          callback(null, (messages.currentPathMessage(pathToWorkingDirectory) + '\n'));
+          callback(null, (' '));
         },
       });
     pipeline(
@@ -30,13 +30,17 @@ export const commandsListener = async () => {
 
 const getUserCommand = async (commandString) => {
     const commandArray = commandString.split(' ');
-    console.log(commandArray);
+    // console.log(commandArray);
     switch (commandArray[0]) {
         case 'up\r\n':
         case 'cd\r\n':
         case 'cd':
+        case 'ls\r\n':
+           return await getCurrentPath(commandArray);
+           case 'cat':
            return await getCurrentPath(commandArray);            
         default:
+            console.log(messages.invalidInputMessage);
             break;
     }
 }
