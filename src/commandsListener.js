@@ -35,7 +35,6 @@ export const commandsListener = async () => {
 
 const getUserCommand = async (commandString) => {
     const commandArray = commandString.split(' ');
-    // console.log(commandArray);
     switch (commandArray[0]) {
         case 'up\r\n':
         case 'cd\r\n':
