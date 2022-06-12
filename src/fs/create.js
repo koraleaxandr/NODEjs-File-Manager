@@ -1,9 +1,12 @@
 import * as fs from 'fs/promises';
+import path from 'path';
 
 import { messages } from '../messages.js';
 
 export const createFile = async (pathToWorkingDirectory, fileName) => {
-    const pathString = `${pathToWorkingDirectory}/${fileName}`;
+    fileName = path.basename(fileName)
+    const pathString = path.resolve(pathToWorkingDirectory, fileName);
+    console.log(pathString);
     try {
         await fs.writeFile(pathString,
             '', {
