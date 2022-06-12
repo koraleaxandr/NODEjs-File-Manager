@@ -7,6 +7,7 @@ import { messages } from './messages.js';
 import { createFile } from './fs/create.js';
 import { renameFile } from './fs/rename.js';
 import { copyFile } from './fs/copyFile.js';
+import { removeFile } from './fs/delete.js';
 
 export const commandsListener = async () => {
     console.log(messages.currentPathMessage(pathToWorkingDirectory));
@@ -58,6 +59,11 @@ const getUserCommand = async (commandString) => {
             const pathToMovedFile = getEnteredPath(pathToMovedFileArray.join(' '));
             const targetMovingFolder = (getEnteredPath(commandArray[commandArray.length - 1].slice(0, -2)));
             return await copyFile(pathToMovedFile, targetMovingFolder, true);
+            case 'rm':
+                commandArray.shift();
+                const pathToDeletingFile = getEnteredPath(commandArray.join(' ').slice(0, -2));
+                console.log(pathToDeletingFile);
+                return await removeFile(pathToDeletingFile);
         default:
             console.error(messages.invalidInputMessage);
             console.log(messages.currentPathMessage(pathToWorkingDirectory));
