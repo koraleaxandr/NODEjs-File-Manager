@@ -12,7 +12,8 @@ export const removeFile = async (pathString) => {
         console.log(`File ${fileName} delete from ${fileFolder}`);
         console.log(messages.currentPathMessage(pathToWorkingDirectory));
     } catch (error) {
-        console.log(messages.operationFailedMessage + error);
+        console.log(messages.operationFailedMessage);
+        console.log(error);
         console.log(messages.currentPathMessage(pathToWorkingDirectory));
     }
 };
