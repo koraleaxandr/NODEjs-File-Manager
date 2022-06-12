@@ -9,23 +9,27 @@ export const parseEnv = (argument) => {
     switch (argument) {
         case 'homedir':
             key = os.homedir();
+            console.log(key);
             break;
             case 'username':
             key = os.userInfo().username;
+            console.log(key);
             break;
             case 'architecture':
             key = os.arch();
+            console.log(key);
             break;
-            case 'architecture':
+            case 'cpus':
             key = os.cpus();
+            console.log(key);
             break;
             case 'EOL':
             key = os.EOL;
             console.log(key);
             break;    
         default:
-            console.error(messages.invalidInputMessage);
-            console.log(messages.currentPathMessage(pathToWorkingDirectory));
+            console.error(messages.invalidInputMessage);            
             break;
     }   
+    console.log(messages.currentPathMessage(pathToWorkingDirectory));
 };
