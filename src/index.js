@@ -13,7 +13,11 @@ export const startApp = async () => {
     process.on('SIGINT', () => {
         console.log(messages.closeAppMessage(userName));
         process.exit(1);
-    });  
+    });
+    process.on('SIGHUP', () => {
+        console.log(messages.closeAppMessage(userName));
+        process.exit(1);
+    });
 };
 
 startApp();

@@ -2,6 +2,7 @@ import { pipeline, Transform } from 'stream';
 import process, { stdin, stdout } from 'process';
 import path from 'path';
 
+import { userName } from './index.js';
 import { pathToWorkingDirectory, getCurrentPath } from './createDirPath.js';
 import { messages } from './messages.js';
 import { createFile } from './fs/create.js';
@@ -67,7 +68,10 @@ const getUserCommand = async (commandString) => {
         case 'hash':
             commandArray.shift();
             const pathToHashingFile = getEnteredPath(commandArray.join(' ').slice(0, -2));
-            return await calculateHash(pathToHashingFile);
+            return await calculateHash(pathToHashingFile);            
+        case '.exit\r\n':
+            console.log(messages.closeAppMessage(userName));
+            process.exit(1);
         default:
             console.error(messages.invalidInputMessage);
             console.log(messages.currentPathMessage(pathToWorkingDirectory));
