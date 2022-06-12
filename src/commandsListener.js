@@ -1,9 +1,12 @@
 import { pipeline, Transform } from 'stream';
 import process, { stdin, stdout } from 'process';
+import path from 'path';
 
 import { pathToWorkingDirectory, getCurrentPath } from './createDirPath.js';
 import { messages } from './messages.js';
 import { createFile } from './fs/create.js';
+import { renameFile } from './fs/rename.js';
+import { copyFile } from './fs/copyFile.js';
 
 export const commandsListener = async () => {
     console.log(messages.currentPathMessage(pathToWorkingDirectory));
@@ -12,7 +15,6 @@ export const commandsListener = async () => {
     const decode = new Transform({
         transform(chunk, encoding, callback) {            
             chunk = chunk.toString();
-            // console.log(chunk);
             const res =  getUserCommand(chunk);
           callback(null, (' '));
         },
@@ -31,7 +33,7 @@ export const commandsListener = async () => {
 
 const getUserCommand = async (commandString) => {
     const commandArray = commandString.split(' ');
-    // console.log(commandArray);
+   // console.log(commandArray);
     switch (commandArray[0]) {
         case 'up\r\n':
         case 'cd\r\n':
@@ -41,10 +43,30 @@ const getUserCommand = async (commandString) => {
            case 'cat':
            return await getCurrentPath(commandArray);
            case 'add':
-           return await createFile(pathToWorkingDirectory, commandArray[1].slice(0, -2))
+           return await createFile(pathToWorkingDirectory, commandArray[1].slice(0, -2));
+           case 'rn':
+            const pathToFileArray = commandArray.slice(1, (commandArray.length-1));
+            const pathToFile = getEnteredPath(pathToFileArray.join(' '));
+           return await renameFile(pathToFile, commandArray[commandArray.length - 1]);
+           case 'cp':            
+            const pathToCopiedFileArray = commandArray.slice(1, (commandArray.length-1));
+            const pathToCopiedFile = getEnteredPath(pathToCopiedFileArray.join(' '));
+            const targetFolder = (getEnteredPath(commandArray[commandArray.length - 1].slice(0, -2)));
+            return await copyFile(pathToCopiedFile, targetFolder, false);
+            case 'mv':            
+             const pathToMovedFileArray = commandArray.slice(1, (commandArray.length-1));
+            const pathToMovedFile = getEnteredPath(pathToMovedFileArray.join(' '));
+            const targetMovingFolder = (getEnteredPath(commandArray[commandArray.length - 1].slice(0, -2)));
+            return await copyFile(pathToMovedFile, targetMovingFolder, true);
         default:
             console.error(messages.invalidInputMessage);
             console.log(messages.currentPathMessage(pathToWorkingDirectory));
             break;
     }
+}
+
+export const getEnteredPath = (pathString) => {
+    if (!path.isAbsolute(pathString)) {
+        return pathString = path.resolve(pathToWorkingDirectory, pathString);
+    } else return pathString = path.resolve(pathString);    
 }
