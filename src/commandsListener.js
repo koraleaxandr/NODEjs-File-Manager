@@ -10,6 +10,7 @@ import { renameFile } from './fs/rename.js';
 import { copyFile } from './fs/copyFile.js';
 import { removeFile } from './fs/delete.js';
 import { calculateHash } from './hash/calcHash.js';
+import { parseEnv } from './os/env.js';
 
 export const commandsListener = async () => {
     console.log(messages.currentPathMessage(pathToWorkingDirectory));
@@ -68,7 +69,12 @@ const getUserCommand = async (commandString) => {
         case 'hash':
             commandArray.shift();
             const pathToHashingFile = getEnteredPath(commandArray.join(' ').slice(0, -2));
-            return await calculateHash(pathToHashingFile);            
+            return await calculateHash(pathToHashingFile);
+        case 'os':
+            const argument = commandArray[1].replace('--', '').slice(0, -2);
+            console.log(argument);
+            parseEnv(argument);
+            break;         
         case '.exit\r\n':
             console.log(messages.closeAppMessage(userName));
             process.exit(1);
