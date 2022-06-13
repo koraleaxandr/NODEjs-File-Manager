@@ -1,4 +1,5 @@
 import os from 'os';
+import util from 'util';
 
 import { messages } from '../messages.js';
 import { pathToWorkingDirectory } from '../createDirPath.js';
@@ -25,7 +26,7 @@ export const parseEnv = (argument) => {
             break;
             case 'EOL':
             key = os.EOL;
-            console.log(key);
+            console.log(util.inspect(key, {showHidden: true}));
             break;    
         default:
             console.error(messages.invalidInputMessage);            

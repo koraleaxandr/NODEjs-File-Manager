@@ -1,6 +1,7 @@
 import { pipeline, Transform } from 'stream';
 import process, { stdin, stdout } from 'process';
 import path from 'path';
+import util from 'util';
 
 import { userName } from './index.js';
 import { pathToWorkingDirectory, getCurrentPath } from './createDirPath.js';
@@ -72,7 +73,6 @@ const getUserCommand = async (commandString) => {
             return await calculateHash(pathToHashingFile);
         case 'os':
             const argument = commandArray[1].replace('--', '').slice(0, -2);
-            console.log(argument);
             parseEnv(argument);
             break;         
         case '.exit\r\n':
