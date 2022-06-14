@@ -12,6 +12,8 @@ import { copyFile } from './fs/copyFile.js';
 import { removeFile } from './fs/delete.js';
 import { calculateHash } from './hash/calcHash.js';
 import { parseEnv } from './os/env.js';
+import { compressFile } from './zip/compress.js';
+import { decompressFile } from './zip/decompress.js';
 
 export const commandsListener = async () => {
     console.log(messages.currentPathMessage(pathToWorkingDirectory));
@@ -37,45 +39,54 @@ export const commandsListener = async () => {
 };
 
 const getUserCommand = async (commandString) => {
-    const commandArray = commandString.split(' ');
-    switch (commandArray[0]) {
-        case 'up\r\n':
-        case 'cd\r\n':
+    const commandArray = commandString.trim().split(' ');
+    let [command, ...args] = commandString.trim().split(' ');
+    console.log([command, ...args]);
+    console.log(args);
+    if (commandString.includes('\''|'\"')) {
+        args = args.join(' ').split(/["'] | ["']/)
+        //.map((arg) => arg.replaceAll('\''| '\"'))
+    }
+            const pathToCopiedFile = args.length ?
+            getEnteredPath(args[0]) : '';
+            const targetFolder = args.length > 1 ?
+            (getEnteredPath(args[1])) :
+            pathToWorkingDirectory;
+    switch (command) {
+        case 'up':
         case 'cd':
-        case 'ls\r\n':
+        case 'ls':
             return await getCurrentPath(commandArray);
         case 'cat':
             return await getCurrentPath(commandArray);
         case 'add':
-            return await createFile(pathToWorkingDirectory, commandArray[1].slice(0, -2));
+            return await createFile(pathToWorkingDirectory, args[0]);
         case 'rn':
-            const pathToFileArray = commandArray.slice(1, (commandArray.length - 1));
+            const pathToFileArray = args.slice(0, (args.length - 1));
             const pathToFile = getEnteredPath(pathToFileArray.join(' '));
-            return await renameFile(pathToFile, commandArray[commandArray.length - 1]);
-        case 'cp':
-            const pathToCopiedFileArray = commandArray.slice(1, (commandArray.length - 1));
-            const pathToCopiedFile = getEnteredPath(pathToCopiedFileArray.join(' '));
-            const targetFolder = (getEnteredPath(commandArray[commandArray.length - 1].slice(0, -2)));
+            return await renameFile(pathToFile, args[args.length - 1]);
+        case 'cp':            
             return await copyFile(pathToCopiedFile, targetFolder, false);
         case 'mv':
-            const pathToMovedFileArray = commandArray.slice(1, (commandArray.length - 1));
-            const pathToMovedFile = getEnteredPath(pathToMovedFileArray.join(' '));
-            const targetMovingFolder = (getEnteredPath(commandArray[commandArray.length - 1].slice(0, -2)));
-            return await copyFile(pathToMovedFile, targetMovingFolder, true);
+            return await copyFile(pathToCopiedFile, targetFolder, true);
         case 'rm':
-            commandArray.shift();
-            const pathToDeletingFile = getEnteredPath(commandArray.join(' ').slice(0, -2));
-            console.log(pathToDeletingFile);
+            const pathToDeletingFile = getEnteredPath(args.join(' ') );
             return await removeFile(pathToDeletingFile);
         case 'hash':
-            commandArray.shift();
-            const pathToHashingFile = getEnteredPath(commandArray.join(' ').slice(0, -2));
+            const pathToHashingFile = getEnteredPath(args.join(' ') );
             return await calculateHash(pathToHashingFile);
         case 'os':
-            const argument = commandArray[1].replace('--', '').slice(0, -2);
+            const argument = commandArray[1].replace('--', '') ;
             parseEnv(argument);
-            break;         
-        case '.exit\r\n':
+            break;
+        case 'compress':
+            console.log(pathToCopiedFile);
+            console.log( targetFolder);
+            return await compressFile(pathToCopiedFile, targetFolder);
+        case 'decompress':
+                console.log(pathToCopiedFile, targetFolder);
+                return await decompressFile(pathToCopiedFile, targetFolder);
+        case '.exit':
             console.log(messages.closeAppMessage(userName));
             process.exit(1);
         default:

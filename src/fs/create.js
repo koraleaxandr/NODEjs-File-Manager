@@ -16,5 +16,6 @@ export const createFile = async (pathToWorkingDirectory, fileName) => {
             console.log(messages.currentPathMessage(pathToWorkingDirectory));
     } catch (error) {
         console.error(messages.operationFailedMessage);
+        console.log(messages.currentPathMessage(pathToWorkingDirectory));
     };
 };
