@@ -58,7 +58,7 @@ export const getCurrentPath = async(commandArray) => {
             return  pathToWorkingDirectory;     
         }        
     } catch (error) { 
-         //console.log(error);   
+        // console.log(error);   
         console.log(messages.operationFailedMessage);
         console.log(messages.currentPathMessage(pathToWorkingDirectory));
         return error;

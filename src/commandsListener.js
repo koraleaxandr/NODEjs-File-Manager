@@ -39,7 +39,6 @@ export const commandsListener = async () => {
 };
 
 const getUserCommand = async (commandString) => {
-    console.log('42 ' + commandString);
     const commandArray = commandString.trim().split(' ');
     let [command, ...args] = commandString.trim().split(' ');
     if (commandString.includes('\'') || commandString.includes('\"')) {
@@ -47,48 +46,51 @@ const getUserCommand = async (commandString) => {
         .map((arg) => arg.replaceAll('\'', ''))
         .map((arg) => arg.replaceAll('\"', ''));
     }
-            const pathToFile = args.length ?
-            getEnteredPath(args[0]) : '';
-            const targetFolder = args.length > 1 ?
-            (getEnteredPath(args[1])) :
-            pathToWorkingDirectory;
+    const pathToFile = args.length ? getEnteredPath(args[0]) : '';
+    const targetFolder = args.length > 1 ? (getEnteredPath(args[1])) :
+    pathToWorkingDirectory;
     switch (command) {
         case 'up':
         case 'cd':
         case 'ls':
-            return await getCurrentPath([command, ...args]);
         case 'cat':
-            return await getCurrentPath(commandArray);
+            return await getCurrentPath([command, ...args]);
         case 'add':
-            return await createFile(pathToWorkingDirectory, args[0]);
+            return await createFile(pathToWorkingDirectory, pathToFile);
         case 'rn':
-            const pathToFileArray = args.slice(0, (args.length - 1));
-            const pathToFile = getEnteredPath(pathToFileArray.join(' '));
-            return await renameFile(pathToFile, args[args.length - 1]);
+            if (args.length === 2) {
+            return await renameFile(pathToFile, args[1]);
+            } else return getInvalidInput();
         case 'cp':            
             return await copyFile(pathToFile, targetFolder, false);
         case 'mv':
             return await copyFile(pathToFile, targetFolder, true);
         case 'rm':
-            const pathToDeletingFile = getEnteredPath(args.join(' ') );
-            return await removeFile(pathToDeletingFile);
+            if (args.length) {
+                pathToFile = getEnteredPath(args.join(' '));
+                return await removeFile(getEnteredPath(args.join(' ')));
+            } else return getInvalidInput();
         case 'hash':
-            const pathToHashingFile = getEnteredPath(args.join(' ') );
-            return await calculateHash(pathToHashingFile);
+            if (args.length) {
+            pathToFile = getEnteredPath(args.join(' '));
+            return await calculateHash(pathToFile);
+        } else return getInvalidInput();
         case 'os':
-            const argument = commandArray[1].replace('--', '') ;
-            parseEnv(argument);
-            break;
+            if (args.length) {
+                const argument = args[0].replace('--', '') ;
+                parseEnv(argument);
+                break;
+            } else return getInvalidInput();           
         case 'compress':
             return await compressFile(pathToFile, targetFolder);
         case 'decompress':
                 return await decompressFile(pathToFile, targetFolder);
         case '.exit':
             console.log(messages.closeAppMessage(userName));
-            process.exit(1);
+            process.exit();
+            break;
         default:
-            console.error(messages.invalidInputMessage);
-            console.log(messages.currentPathMessage(pathToWorkingDirectory));
+            getInvalidInput();
             break;
     }
 }
@@ -97,4 +99,9 @@ export const getEnteredPath = (pathString) => {
     if (!path.isAbsolute(pathString)) {
         return pathString = path.resolve(pathToWorkingDirectory, pathString);
     } else return pathString = path.resolve(pathString);
+}
+
+const getInvalidInput = () => {
+    console.error(messages.invalidInputMessage);
+    console.log(messages.currentPathMessage(pathToWorkingDirectory));
 }
