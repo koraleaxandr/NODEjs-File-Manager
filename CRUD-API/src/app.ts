@@ -1,19 +1,15 @@
 import * as http from 'http';
 
+import  Controller  from './controllers/controller';
+
 const PORT: number = 3000;
 
 const server = http
   .createServer( (request, res) => {
-    res.setHeader('Content-type', 'application/json');
-    res.write('<h1>HELLO</h1>');
-    
-    
-    const data = JSON.stringify([
-    { name: 'Alex', age: 22}
-    ]);
-    res.end(data);
-    console.log('Server request:');
-    console.log(request.url, request.method);    
+    res.setHeader('Content-type', 'application/json');    
+    const controller = new Controller 
+    const resp = controller.getResponse(request);    
+    res.end(JSON.stringify(resp));        
   })
   .listen(PORT, (): void => {
      console.log(
