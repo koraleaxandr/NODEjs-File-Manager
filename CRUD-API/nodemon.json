@@ -1,0 +1,6 @@
+{
+  "watch": ["./dist"],
+  "ext": ".ts,.cjs",
+  "ignore": [],
+  "exec": "node ./dist/main.cjs"
+}
