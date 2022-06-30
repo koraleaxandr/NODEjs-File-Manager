@@ -31,8 +31,14 @@ class UsersDb {
         } else return false
     }
 
-    public updateUser (user: User) {
-
+    public updateUser (updatedUser: User): User | null {
+        const index: number = this.storedUsers.find((user) => {
+            return (updatedUser.id === user.id)
+        });
+        if (index !== -1) {
+            this.storedUsers[index] = (...updatedUser);
+            return this.storedUsers[index];
+        } else return null
     }
 
 }

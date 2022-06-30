@@ -10,47 +10,80 @@ import {
 import {
     ServerResponseObject
 } from '../models/response.model';
+import {
+    messages
+} from '../serverMessages/serverMessages';
+import users from '../store/users'
 
 class Controller {
-    recievedUserId: string | null = null;
+    private recievedUserId: string | null = null;
+
+    private resp: ServerResponseObject = {
+        statusCode: 500,
+        statusMessage: JSON.stringify('server error. try to reconnect, or refresh brouser'),
+    }
 
     public getResponse(request: IncomingMessage): ServerResponseObject {
         console.log('Server request:');
         console.log(request.url, request.method);
-        if (request.url) this.getIDFromURl(request.url);
-
-        const resp = {
-            statusCode: 200,
-            statusMessage: JSON.stringify([
-                request.url, request.method
-            ]),
+        if (request.url) {
+            const pathDir: string = path.parse(request.url).dir;
+            if (pathDir === '/users') {
+                if (path.parse(request.url).name && !this.getIDFromURl(request.url)) {
+                    this.resp = {
+                        statusCode: 400,
+                        statusMessage: JSON.stringify(messages.notValidIdMessage),
+                    };
+                    return this.resp;
+                } else {
+                    this getRequestMethod(request);
+                }                
+            } else {
+                this.resp = {
+                    statusCode: 404,
+                    statusMessage: JSON.stringify(messages.pageNotFoundmessage),
+                };
+            }            
         }
-        return resp;
+        return this.resp;
     }
 
     private getIDFromURl(url: string): string | null {
         let recievedUserId: string | null = null;
-        const pathDir: string = path.parse(url).dir;
-        if (pathDir === '/users') {
-            recievedUserId = path.parse(url).name;
-            console.log(recievedUserId);
-            recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null;
-        }
-        return this.recievedUserId = recievedUserId;
+        recievedUserId = path.parse(url).name;
+        console.log(recievedUserId);
+        recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null;
+        this.recievedUserId = recievedUserId;
+        return this.recievedUserId;
     }
 
-    private getRequestMethod (request: IncomingMessage) {
+    private getRequestMethod(request: IncomingMessage) {
         const requestMethod: string = request.method;
         switch (requestMethod) {
             case 'GET':
-                if (this.recievedUserId) {
-                    
+                if (!this.recievedUserId) {
+                    this.resp = {
+                        statusCode: 200,
+                        statusMessage: JSON.stringify(messages.requestWriteMessage),
+                        users: users.getUsers(),
+                    };
+                } else if (users.getUser(this.recievedUserI)){
+                    this.resp = {
+                        statusCode: 200,
+                        statusMessage: JSON.stringify(messages.requestWriteMessage),
+                        currentUser: users.getUser(this.recievedUserI),
+                    };
+                } else {
+                    this.resp = {
+                        statusCode: 404,
+                        statusMessage: JSON.stringify(messages.userNotFoundMessage),
+                    };
                 }
                 break;
-        
+
             default:
                 break;
-        } 
+        }
     }
 
 }
