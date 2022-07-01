@@ -11,6 +11,9 @@ import {
     ServerResponseObject
 } from '../models/response.model';
 import {
+    User, CreatingUser
+} from '../models/user.model';
+import {
     messages
 } from '../serverMessages/serverMessages';
 import users from '../store/users'
@@ -29,14 +32,15 @@ class Controller {
         if (request.url) {
             const pathDir: string = path.parse(request.url).dir;
             if (pathDir === '/users') {
-                if (path.parse(request.url).name && !this.getIDFromURl(request.url)) {
+                const recievedUserId: string | undefined = path.parse(url).name;
+                if (recievedUserId && !this.validateIdFromUrl(recievedUserId)) {
                     this.resp = {
                         statusCode: 400,
                         statusMessage: JSON.stringify(messages.notValidIdMessage),
                     };
                     return this.resp;
                 } else {
-                    this getRequestMethod(request);
+                    this.getRequestMethod(request);
                 }                
             } else {
                 this.resp = {
@@ -48,12 +52,8 @@ class Controller {
         return this.resp;
     }
 
-    private getIDFromURl(url: string): string | null {
-        let recievedUserId: string | null = null;
-        recievedUserId = path.parse(url).name;
-        console.log(recievedUserId);
-        recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null;
-        this.recievedUserId = recievedUserId;
+    private validateIdFromUrl(recievedUserId: string |undefined): string | null {
+        this.recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null;
         return this.recievedUserId;
     }
 
@@ -80,10 +80,20 @@ class Controller {
                     };
                 }
                 break;
-
+            case 'POST':
+                if (this.validateRecievedUser(request)) {
+                const creatingUser: CreatingUser = JSON.parse(request.body);
+                //users.addUser(creatingUser);
             default:
                 break;
         }
+    }
+
+    private validateRecievedUser (request: IncomingMessage):boolean {
+        const recievedUser= JSON.parse(request.body) as CreatingUser;
+        if (typeOf(recievedUser.username) === 'string' && typeOf(recievedUser.age) === 'number' && recievedUser.hobbies instanceOf Array) {
+            return true;
+        } else return false;
     }
 
 }
