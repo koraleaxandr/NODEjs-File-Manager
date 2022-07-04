@@ -1,9 +1,10 @@
 import * as http from 'http';
 
-import Controller from './controllers/controller.ts';
+import Controller from './controllers/controller';
 
 const PORT: number = 3000;
 
+// eslint-disable-next-line no-unused-vars
 const server = http
   .createServer((request, res) => {
     res.setHeader('Content-type', 'application/json');

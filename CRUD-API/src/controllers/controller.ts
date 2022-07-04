@@ -1,6 +1,4 @@
-import {
-  IncomingMessage,
-} from 'http';
+
 import * as path from 'path';
 import {
   v4 as uuidv4,
@@ -8,14 +6,12 @@ import {
 } from 'uuid';
 import {
   ServerResponseObject,
-} from '../models/response.model.ts';
+} from '../models/response.model';
 import {
   User, CreatingUser,
-} from '../models/user.model.ts';
-import {
-  messages,
-} from '../serverMessages/serverMessages.ts';
-import users from '../store/users.ts';
+} from '../models/user.model';
+import messages from '../serverMessages/serverMessages';
+import users from '../store/users';
 
 class Controller {
   private recievedUserId: string | null = null;
@@ -25,14 +21,14 @@ class Controller {
     statusMessage: JSON.stringify('server error. try to reconnect, or refresh brouser'),
   };
 
-  public getResponse(request: IncomingMessage): ServerResponseObject {
+  public getResponse(request: Request): ServerResponseObject {
     console.log('Server request:');
     console.log(request.url, request.method);
     if (request.url) {
       const pathDir: string = path.parse(request.url).dir;
       if (pathDir === '/users') {
         const recievedUserId: string | undefined = path.parse(request.url).name;
-        if (recievedUserId && !this.validateIdFromUrl(recievedUserId)) {
+        if (recievedUserId && !this.validateIdFromUrl(recievedUserId as string)) {
           this.resp = {
             statusCode: 400,
             statusMessage: JSON.stringify(messages.notValidIdMessage),
@@ -43,20 +39,20 @@ class Controller {
       } else {
         this.resp = {
           statusCode: 404,
-          statusMessage: JSON.stringify(messages.pageNotFoundmessage),
+          statusMessage: JSON.stringify(messages.pageNotFoundMessage),
         };
       }
     }
     return this.resp;
   }
 
-  private validateIdFromUrl(recievedUserId: string |undefined): string | null {
-    this.recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null;
+  private validateIdFromUrl(recievedUserId: string): string | null {
+    this.recievedUserId = uuidValidate(recievedUserId) ? recievedUserId : null as string | null;
     return this.recievedUserId;
   }
 
-  private getRequestMethod(request: IncomingMessage) {
-    const requestMethod: string = request.method;
+  private getRequestMethod(request: Request) {
+    const requestMethod: string = request.method as string;
     switch (requestMethod) {
       case 'GET':
         if (!this.recievedUserId) {
@@ -65,11 +61,11 @@ class Controller {
             statusMessage: JSON.stringify(messages.requestWriteMessage),
             users: users.getUsers(),
           };
-        } else if (users.getUser(this.recievedUserI)) {
+        } else if (users.getUser(this.recievedUserId)) {
           this.resp = {
             statusCode: 200,
             statusMessage: JSON.stringify(messages.requestWriteMessage),
-            currentUser: users.getUser(this.recievedUserI),
+            currentUser: users.getUser(this.recievedUserId),
           };
         } else {
           this.resp = {
@@ -79,10 +75,10 @@ class Controller {
         }
         break;
       case 'POST':
-        if (this.validateRecievedUser(request)) {
-          const creatingUser: CreatingUser = JSON.parse(request.body);
+        if (Controller.validateRecievedUser(request)) {
+          const creatingUser: CreatingUser = JSON.parse(JSON.stringify(request.body));
           const userId: string = uuidv4();
-          const creatingUserWithId = { userId, ...creatingUser } as User;
+          const creatingUserWithId = { id: userId, ...creatingUser } as User;
           console.log(creatingUserWithId);
           users.addUser(creatingUserWithId);
         }
@@ -92,8 +88,8 @@ class Controller {
     }
   }
 
-  private static validateRecievedUser(request: IncomingMessage):boolean {
-    const recievedUser = JSON.parse(request.body) as CreatingUser;
+  private static validateRecievedUser(request: Request):boolean {
+    const recievedUser = JSON.parse(JSON.stringify(request.body)) as CreatingUser;
     console.log(recievedUser);
     if (typeof (recievedUser.username) === 'string' && typeof (recievedUser.age) === 'number' && recievedUser.hobbies instanceof Array) {
       return true;

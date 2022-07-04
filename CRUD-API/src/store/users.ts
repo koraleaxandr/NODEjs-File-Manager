@@ -1,6 +1,6 @@
 import {
   User,
-} from '../models/user.model.ts';
+} from '../models/user.model';
 
 class UsersDb {
   storedUsers: User[] = [];
@@ -13,7 +13,7 @@ class UsersDb {
     return this.storedUsers.find((user) => (id === user.id));
   }
 
-  public addUser(user): User | null {
+  public addUser(user: User): User | null {
     if (!this.getUser(user.id)) {
       this.storedUsers.push(user);
       return user;
@@ -28,7 +28,7 @@ class UsersDb {
   }
 
   public updateUser(updatedUser: User): User | null {
-    const index: number = this.storedUsers.find((user) => (updatedUser.id === user.id));
+    const index: number = this.storedUsers.findIndex((user) => (updatedUser.id === user.id));
     if (index !== -1) {
       this.storedUsers[index] = {
         ...this.storedUsers[index],
